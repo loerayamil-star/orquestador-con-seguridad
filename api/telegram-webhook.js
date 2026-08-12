@@ -9,7 +9,6 @@ export default async function handler(req, res) {
 
   const secretoEsperado = process.env.TELEGRAM_WEBHOOK_SECRET;
   const usuarioAutorizado = process.env.TELEGRAM_ALLOWED_USER_ID;
-  console.error('DEBUG longitud del secreto en Vercel:', secretoEsperado?.length);
 
   if (!secretoEsperado || !usuarioAutorizado) {
     // Falla explícita en logs del servidor (§12); nunca se expone al usuario ni en la respuesta HTTP.
