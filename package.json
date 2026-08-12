@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Asistente personal orquestador multiagente — conecta Obsidian, Notion y GitHub bajo un diseño de seguridad por capas (permisos asimétricos por canal, catálogo de acciones por riesgo, auditoría de intentos rechazados). Construcción asistida por IA bajo arquitectura y decisiones de seguridad propias.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
