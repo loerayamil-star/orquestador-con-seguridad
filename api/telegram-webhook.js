@@ -1,5 +1,5 @@
 import { sendMessage } from '../lib/telegram.js';
-import { buscarContexto } from '../lib/notion.js';
+import { buscarContexto, obtenerContenido } from '../lib/notion.js';
 import { generarRespuesta } from '../lib/groq.js';
 
 export default async function handler(req, res) {
@@ -48,16 +48,27 @@ export default async function handler(req, res) {
     }
 
     // Agente de Conocimiento (Fase 2, SOLO LECTURA — ARQUITECTURA.md §1, §2, §3):
-    // si Notion falla, degradamos a responder sin ese contexto en vez de fallar
-    // todo el mensaje.
-    let contexto = [];
+    // degradación en cascada — si falla el contenido de la página, seguimos con
+    // título+url; si falla la búsqueda misma, seguimos sin contexto de Notion.
+    // Nunca fallamos todo el mensaje por esto.
+    let pagina = null;
     try {
-      contexto = await buscarContexto(texto);
+      const candidatos = await buscarContexto(texto);
+      const masRelevante = candidatos[0];
+      if (masRelevante) {
+        try {
+          const contenido = await obtenerContenido(masRelevante.id);
+          pagina = { ...masRelevante, contenido };
+        } catch (error) {
+          console.error('Error al leer el contenido de la página en Notion:', error.message);
+          pagina = masRelevante;
+        }
+      }
     } catch (error) {
-      console.error('Error al consultar Notion:', error.message);
+      console.error('Error al buscar en Notion:', error.message);
     }
 
-    const respuestaTexto = await generarRespuesta(texto, contexto);
+    const respuestaTexto = await generarRespuesta(texto, pagina);
     await sendMessage(mensaje.chat.id, respuestaTexto);
   } catch (error) {
     // Nunca exponer detalles internos al usuario ni en la respuesta (§13).
