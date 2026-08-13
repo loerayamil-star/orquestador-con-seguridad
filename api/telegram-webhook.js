@@ -1,4 +1,6 @@
 import { sendMessage } from '../lib/telegram.js';
+import { buscarContexto } from '../lib/notion.js';
+import { generarRespuesta } from '../lib/groq.js';
 
 export default async function handler(req, res) {
   // 1. Método debe ser POST.
@@ -36,11 +38,35 @@ export default async function handler(req, res) {
     return;
   }
 
+  const texto = mensaje.text;
+
   try {
-    await sendMessage(mensaje.chat.id, 'Recibido. Fase 1: sin IA todavía.');
+    if (!texto) {
+      await sendMessage(mensaje.chat.id, 'Por ahora solo puedo leer mensajes de texto.');
+      res.status(200).end();
+      return;
+    }
+
+    // Agente de Conocimiento (Fase 2, SOLO LECTURA — ARQUITECTURA.md §1, §2, §3):
+    // si Notion falla, degradamos a responder sin ese contexto en vez de fallar
+    // todo el mensaje.
+    let contexto = [];
+    try {
+      contexto = await buscarContexto(texto);
+    } catch (error) {
+      console.error('Error al consultar Notion:', error.message);
+    }
+
+    const respuestaTexto = await generarRespuesta(texto, contexto);
+    await sendMessage(mensaje.chat.id, respuestaTexto);
   } catch (error) {
     // Nunca exponer detalles internos al usuario ni en la respuesta (§13).
-    console.error('Error al enviar mensaje a Telegram:', error.message);
+    console.error('Error al generar respuesta:', error.message);
+    try {
+      await sendMessage(mensaje.chat.id, 'Tuve un problema generando la respuesta. Intenta de nuevo.');
+    } catch (errorEnvio) {
+      console.error('Error al enviar mensaje de fallback a Telegram:', errorEnvio.message);
+    }
   }
 
   res.status(200).end();

@@ -24,6 +24,8 @@ Laptop (local) ──────┘         │
 - **Interfaz remota:** función serverless en Vercel, actúa como webhook de Telegram — solo despierta cuando llega un mensaje, no requiere servidor prendido 24/7.
 - **Interfaz local:** Antigravity corriendo directo en la laptop, con acceso a filesystem para editar Obsidian.
 
+> **Nota (12 agosto):** Antigravity presentó fricción real hoy (crashes del IDE por hardware limitado, complicaciones de autenticación en la CLI, errores genéricos de ejecución). Se usa Groq (gpt-oss-120B) como motor TEMPORAL del Agente de Conocimiento en Fase 2, en vez de Antigravity+MCP nativo. Esto no es un cambio de diseño permanente — Antigravity sigue siendo el plan a futuro. Groq ya estaba contemplado como fallback (sección 1), así que usarlo como principal ahora es coherente con la arquitectura existente, no una desviación.
+
 ---
 
 ## 2. Catálogo de agentes (por especialidad, no un solo modelo generalista)
@@ -155,7 +157,7 @@ Ninguna API key hardcodeada. Viven en Environment Variables de Vercel (dashboard
 5. **Multiagente completo + fallback** — Orquestador clasificando intención, fallback a Groq, Bitácora de Acciones de punta a punta.
 6. **Migración a datos reales** — solo tras red-teaming exitoso del sandbox.
 
-**Estado actual: Fase 1, en progreso.**
+**Estado actual: Fase 2, en progreso.** (Fase 1 cerrada el 12 de agosto: criterios de §15 verificados — webhook registrado, `getWebhookInfo` limpio, variables de entorno configuradas en Vercel.)
 
 ---
 ---
@@ -230,12 +232,12 @@ Vive en `scripts/set-webhook.js`, se ejecuta a mano, y lee el token desde variab
 
 Fase 1 está completa cuando **todo** lo siguiente es cierto:
 
-- [ ] El endpoint responde `405` a métodos distintos de `POST`.
-- [ ] Rechaza con `401` si el `secret_token` no coincide.
-- [ ] Ignora silenciosamente (pero responde `200`) mensajes de un `from.id` no autorizado.
-- [ ] Ante un mensaje válido del usuario autorizado, responde en el chat de Telegram con un texto fijo (ej. "Recibido. Fase 1: sin IA todavía.").
-- [ ] No hay ningún secreto en el código ni en el historial de git.
-- [ ] `.env.example` documenta las tres variables de Fase 1, sin valores.
-- [ ] El webhook está registrado y `getWebhookInfo` no muestra errores pendientes.
+- [x] El endpoint responde `405` a métodos distintos de `POST`.
+- [x] Rechaza con `401` si el `secret_token` no coincide.
+- [x] Ignora silenciosamente (pero responde `200`) mensajes de un `from.id` no autorizado.
+- [x] Ante un mensaje válido del usuario autorizado, responde en el chat de Telegram con un texto fijo (ej. "Recibido. Fase 1: sin IA todavía.").
+- [x] No hay ningún secreto en el código ni en el historial de git.
+- [x] `.env.example` documenta las tres variables de Fase 1, sin valores.
+- [x] El webhook está registrado y `getWebhookInfo` no muestra errores pendientes.
 
 Sin IA, sin MCP, sin acceso a Notion/Obsidian/GitHub en esta fase — cualquiera de esas cosas es Fase 2 o posterior.
