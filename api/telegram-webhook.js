@@ -57,7 +57,7 @@ export default async function handler(req, res) {
       const masRelevante = candidatos[0];
       if (masRelevante) {
         try {
-          const contenido = await obtenerContenido(masRelevante.id);
+          const contenido = await obtenerContenido(masRelevante.id, texto);
           pagina = { ...masRelevante, contenido };
         } catch (error) {
           console.error('Error al leer el contenido de la página en Notion:', error.message);
