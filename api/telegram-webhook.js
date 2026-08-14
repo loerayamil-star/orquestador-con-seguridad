@@ -55,6 +55,7 @@ export default async function handler(req, res) {
     try {
       const candidatos = await buscarContexto(texto);
       const masRelevante = candidatos[0];
+      console.error('DEBUG candidatos encontrados:', candidatos.length, JSON.stringify(candidatos.map(c => c.titulo)));
       if (masRelevante) {
         try {
           const contenido = await obtenerContenido(masRelevante.id, texto);
