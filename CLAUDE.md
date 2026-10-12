@@ -40,23 +40,22 @@ Nunca implementar, ni aunque se pida explícitamente en un prompt futuro. Si un 
 
 ## Estado del proyecto
 
-**Fase 1** del roadmap (`ARQUITECTURA.md` §10): fundación.
+**Fase 1** del roadmap (`ARQUITECTURA.md` §10): fundación, código implementado, verificación pendiente.
 
 Ya hecho:
 - Sandbox de pruebas creado (workspace de Notion separado + vault `Sandbox-YARVIS` en Obsidian)
 - Repo, `package.json`, documentación de arquitectura
 - Bot creado en BotFather, token guardado en Bitwarden
-
-Pendiente de Fase 1:
-- Proyecto importado en Vercel, conectado al repo de GitHub
-- Variables de entorno configuradas en Vercel (§12)
-- `api/telegram-webhook.js` con las verificaciones de §13
+- `api/telegram-webhook.js` con las verificaciones de §13 (fusionado en el PR #1)
 - `lib/telegram.js` con el helper de `sendMessage`
 - `scripts/set-webhook.js` para registrar el webhook (§14)
-- `.env.example`
-- Todos los criterios de §15 cumplidos y verificados
+- `.env.example` con las tres variables de Fase 1
 
----
+Pendiente de Fase 1:
+- Confirmar proyecto en Vercel conectado al repo y variables de entorno configuradas (§12)
+- Registrar el webhook y comprobar que `getWebhookInfo` no muestra errores
+- Verificar los criterios de §15 y marcar sus casillas en `ARQUITECTURA.md`
+- Sustituir el `npm test` de relleno (`exit 1`) por tests de comportamiento del webhook
 
 ## Convenciones del proyecto
 
